@@ -12,7 +12,7 @@ Porcupine : Creature {
 
 			var env, body, soul, finalSignal, lfoMul;
 
-			lfoMul = SinOsc.kr(lfoRate).range(minMul, maxMul);
+			lfoMul = LFSaw.kr(lfoRate).range(minMul, maxMul);
 
 			env = EnvGen.kr(
 				Env.adsr(attack, decay, sustain, release),
@@ -30,21 +30,32 @@ Porcupine : Creature {
     }
 
    dawn {
-		"--- Porcupine Dawn sound start ---".postln;
+
+		 // *** dawn breath
         this.substitute(
             Synth(\porcupine, [
                 \buf, this.buffer,
-                \freq, 660,
+                \freq, 200,
                 \rate, 2,
                 \lfoRate, 1.5,
                 \minMul, 0.1,
                 \maxMul, 0.7
             ])
         );
+       // *** dawn voice
+		  this addLoop: {
+			    [4, 8, 12].choose.wait;
+			    this.addTimed (
+				  {SinOsc.ar(LFNoise1.kr(1).range(1200, 1600), 0, 0.1) *
+					Line.kr(0,1,0.5).dup
+				  }.play,
+				  [1, 2, 3].choose
+			    );
+		 }
 	}
 
 	day {
-        "--- Porcupine Day sound start ---".postln;
+        // *** day breath
         this.substitute(
             Synth(\porcupine, [
                 \buf, this.buffer,
@@ -55,10 +66,23 @@ Porcupine : Creature {
                 \maxMul, 1
             ])
         );
+		  // *** day voice
+		  this addLoop: {
+			    [5, 8].choose.wait;
+			    this.addTimed ({
+				      LFSaw.ar(LFNoise2.kr(2).range(100, 400)) *
+					   EnvGen.kr(
+					       Env.perc(0.5, 0.8, [0.03, 0.1, 0.17].choose),
+						    doneAction:2
+				      ).dup
+				  }.play,
+				  3
+			    );
+		 }
     }
 
 	 dusk {
-        "--- Porcupine Dusk sound start ---".postln;
+        // *** dusk breath
         this.substitute(
             Synth(\porcupine, [
                 \buf, this.buffer,
@@ -69,13 +93,15 @@ Porcupine : Creature {
                 \maxMul, 0.8
             ])
         );
-
+		 // *** dusk voice
+       this add: {
+			GrayNoise.ar(LFNoise1.kr(0.1) * 0.01).dup
+		 }.play;
 	}
 
 
     night {
-        "--- Porcupine Night sound start ---".postln;
-      //  this.release(1);
+        // *** night breath
 		  this.substitute(
             Synth(\porcupine, [
                 \buf, this.buffer,
@@ -86,16 +112,18 @@ Porcupine : Creature {
                 \maxMul, 0.4
             ])
         );
+		 // *** night voice
+       this add: {
+			LFNoise0.ar(LFNoise1.kr(2).range(200, 400), 0.01).dup
+		 }.play;
     }
 
 	danger {
-        "--- Porcupine Danger sound start ---".postln;
-      //  this.release(1);
 		  this.substitute(
             Synth(\porcupine, [
                 \buf, this.buffer,
-                \freq, 220,
-                \rate, 2,
+                \freq, 1220,
+                \rate, 3,
                 \lfoRate, 2,
                 \minMul, 0.4,
                 \maxMul, 1
